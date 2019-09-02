@@ -1,3 +1,5 @@
+const baselinka = document.createElement("div");
+
 const getBaseline = (el) => {
     const clone = el.cloneNode(true);
 
@@ -25,17 +27,14 @@ const getBaseline = (el) => {
 };
 
 const handler = ({target}) => {
-    let line = document.querySelector(".__LINE__");
-
-    if (!line) {
-        line = document.createElement("div");
-        document.body.appendChild(line);
+    if (baselinka.parentNode !== document.body) {
+        document.body.appendChild(baselinka);
     }
 
     const {top, left, width} = target.getBoundingClientRect();
     const bl = getBaseline(target);
 
-    line.style.cssText = `
+    baselinka.style.cssText = `
 		position: absolute;
 		background: red;
 		height: 1px;
@@ -43,7 +42,6 @@ const handler = ({target}) => {
 		left: ${left}px;
 		width: ${width}px;
 	`;
-    line.className = "__LINE__";
 };
 
 document.addEventListener("mouseover", handler);
