@@ -36,6 +36,7 @@ const handler = ({target}) => {
 
     baselinka.style.cssText = `
 		position: absolute;
+		transition: all 0.3s cubic-bezier(0,1,.5,1);
 		background: red;
 		height: 1px;
 		top: ${top + bl + window.pageYOffset}px;
