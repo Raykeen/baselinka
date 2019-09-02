@@ -39,7 +39,7 @@ const handler = ({target}) => {
 		position: absolute;
 		background: red;
 		height: 1px;
-		top: ${top + bl}px;
+		top: ${top + bl + window.pageYOffset}px;
 		left: ${left}px;
 		width: ${width}px;
 	`;
