@@ -27,10 +27,6 @@ const getBaseline = (el) => {
 };
 
 const handler = ({target}) => {
-    if (baselinka.parentNode !== document.body) {
-        document.body.appendChild(baselinka);
-    }
-
     const {top, left, width} = target.getBoundingClientRect();
     const bl = getBaseline(target);
 
@@ -45,4 +41,33 @@ const handler = ({target}) => {
 	`;
 };
 
-document.addEventListener("mouseover", handler);
+const enable = () => {
+    if (baselinka.parentNode !== document.body) {
+        document.body.appendChild(baselinka);
+    }
+
+    document.addEventListener("mouseover", handler);
+};
+
+const disable = () => {
+    if (baselinka.parentNode === document.body) {
+        document.body.removeChild(baselinka);
+    }
+
+    document.removeEventListener("mouseover", handler);
+};
+
+chrome.runtime.onMessage.addListener(
+    ({ message }) => {
+        console.log(message);
+
+        switch (message) {
+            case "baselinka/enable":
+                enable();
+                break;
+            case "baselinka/disable":
+                disable();
+                break;
+        }
+    }
+);
