@@ -2,17 +2,29 @@ const baselinka = document.createElement("div");
 
 const getBaseline = (el) => {
     const clone = el.cloneNode(true);
+    const computedStyle = getComputedStyle(el);
+    clone.style.cssText = computedStyle.cssText;
+    clone.style.height = `${el.offsetHeight}px`;
+    clone.style.width = `${el.offsetWidth}px`;
+    clone.style.boxSizing = "border-box";
 
     const container = document.createElement("div");
-    container.style.cssText = `
-		display: flex;
-		align-items: baseline;
-	`;
-
     const marker = document.createElement("div");
-    marker.style.cssText = `
-		display: inline-flex;
-	`;
+
+    if ("inline" === computedStyle.display) {
+        marker.style.cssText = `
+            display: inline-block;
+            vertical-align: baseline;
+        `;
+    } else {
+        container.style.cssText = `
+            display: flex;
+            align-items: baseline;
+        `;
+        marker.style.cssText = `
+            display: inline-flex;
+        `;
+    }
 
     container.appendChild(marker);
     container.appendChild(clone);
@@ -27,6 +39,10 @@ const getBaseline = (el) => {
 };
 
 const handler = ({target}) => {
+    if (target === baselinka) {
+        return;
+    }
+
     const {top, left, width} = target.getBoundingClientRect();
     const bl = getBaseline(target);
 
@@ -35,7 +51,8 @@ const handler = ({target}) => {
 		transition: all 0.3s cubic-bezier(0,1,.5,1);
 		background: red;
 		height: 1px;
-		top: ${top + bl + window.pageYOffset}px;
+		top: 0px;
+		transform: translateY(${top + bl + window.pageYOffset}px);
 		left: ${left}px;
 		width: ${width}px;
 	`;
@@ -58,9 +75,7 @@ const disable = () => {
 };
 
 chrome.runtime.onMessage.addListener(
-    ({ message }) => {
-        console.log(message);
-
+    ({message}) => {
         switch (message) {
             case "baselinka/enable":
                 enable();
