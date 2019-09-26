@@ -1,6 +1,6 @@
 const baselinka = document.createElement("div");
 
-const getBaseline = (el) => {
+const getRelativeBaselinePosition = (el) => {
     const clone = el.cloneNode(true);
     const computedStyle = getComputedStyle(el);
     clone.style.cssText = computedStyle.cssText;
@@ -38,13 +38,13 @@ const getBaseline = (el) => {
     return diff;
 };
 
-const handler = ({target}) => {
+const handleElementEvent = ({target}) => {
     if (target === baselinka) {
         return;
     }
 
     const {top, left, width} = target.getBoundingClientRect();
-    const bl = getBaseline(target);
+    const bl = getRelativeBaselinePosition(target);
 
     baselinka.style.cssText = `
 		position: absolute;
@@ -63,7 +63,7 @@ const enable = () => {
         document.body.appendChild(baselinka);
     }
 
-    document.addEventListener("mouseover", handler);
+    document.addEventListener("mouseover", handleElementEvent);
 };
 
 const disable = () => {
@@ -71,7 +71,7 @@ const disable = () => {
         document.body.removeChild(baselinka);
     }
 
-    document.removeEventListener("mouseover", handler);
+    document.removeEventListener("mouseover", handleElementEvent);
 };
 
 chrome.runtime.onMessage.addListener(
