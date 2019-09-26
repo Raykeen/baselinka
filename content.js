@@ -1,17 +1,21 @@
-const baselinka = document.createElement("div");
+const div = () => document.createElement("div");
+
+const baselinka = div();
 
 const getRelativeBaselinePosition = el => {
   const clone = el.cloneNode(true);
-  const client = el.getBoundingClientRect();
+
+  const clientRect = el.getBoundingClientRect();
   const computedStyle = getComputedStyle(el);
   const parentComputedStyle = getComputedStyle(el.parentNode);
+
   const hasFlexParent = parentComputedStyle.display.includes("flex");
   const isInlineElement = computedStyle.display.includes("inline");
 
   clone.style.cssText = `
     ${computedStyle.cssText}
-    height: ${client.height}px;
-    width: ${client.width}px;
+    height: ${clientRect.height}px;
+    width: ${clientRect.width}px;
     box-sizing: border-box;
     top: unset;
     left: unset;
@@ -19,8 +23,8 @@ const getRelativeBaselinePosition = el => {
     right: unset;
   `;
 
-  const container = document.createElement("div");
-  const marker = document.createElement("div");
+  const container = div();
+  const marker = div();
 
   if (hasFlexParent) {
     container.style.cssText = `
@@ -40,7 +44,7 @@ const getRelativeBaselinePosition = el => {
   container.appendChild(marker);
 
   if (!hasFlexParent && !isInlineElement) {
-    const inlineContainer = document.createElement("div");
+    const inlineContainer = div();
     inlineContainer.style.cssText = `
       display: inline-block;
     `;
