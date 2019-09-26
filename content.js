@@ -35,6 +35,9 @@ const getRelativeBaselinePosition = el => {
         display: inline-flex;
     `;
   } else {
+    container.style.cssText = `
+        white-space: nowrap;
+    `;
     marker.style.cssText = `
         display: inline-block;
         vertical-align: baseline;
@@ -104,7 +107,7 @@ const handleElementEvent = ({ target }) => {
 };
 
 const handleWheel = evt => {
-  const { altKey, target, wheelDelta, preventDefault } = evt;
+  const { altKey, target, wheelDelta } = evt;
 
   if (!altKey) return;
 
@@ -116,7 +119,7 @@ const handleWheel = evt => {
   if (wheelDelta > 0 && shiftFromTarget > 0) shiftFromTarget--;
 
   for (let i = 0; i < shiftFromTarget; i++) {
-    baselineTarget = baselineTarget.parentNode || baselineTarget ;
+    baselineTarget = baselineTarget.parentNode || baselineTarget;
   }
 
   if (baselineTarget === document.body) {
