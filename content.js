@@ -63,10 +63,9 @@ const getRelativeBaselinePosition = el => {
   return diff;
 };
 
-const handleElementEvent = ({ target }) => {
-  if ([baselinka, document.body, document.documentElement].includes(target)) {
+const showBaselineFor = target => {
+  if ([baselinka, document.body, document.documentElement].includes(target))
     return;
-  }
 
   const { top, left, width } = target.getBoundingClientRect();
   const bl = getRelativeBaselinePosition(target);
@@ -86,8 +85,47 @@ const handleElementEvent = ({ target }) => {
     `;
   baselinka.innerHTML =
     target.tagName +
-    target.id.split(" ").filter(Boolean).map(id => "#" + id) +
-    target.className.split(" ").filter(Boolean).map(className => "." + className);
+    target.id
+      .split(" ")
+      .filter(Boolean)
+      .map(id => "#" + id) +
+    target.className
+      .split(" ")
+      .filter(Boolean)
+      .map(className => "." + className);
+};
+
+let shiftFromTarget = 0;
+
+const handleElementEvent = ({ target }) => {
+  shiftFromTarget = 0;
+
+  showBaselineFor(target);
+};
+
+const handleWheel = evt => {
+  const { altKey, target, wheelDelta, preventDefault } = evt;
+
+  if (!altKey) return;
+
+  evt.preventDefault();
+
+  let baselineTarget = target;
+
+  if (wheelDelta < 0) shiftFromTarget++;
+  if (wheelDelta > 0 && shiftFromTarget > 0) shiftFromTarget--;
+
+  for (let i = 0; i < shiftFromTarget; i++) {
+    baselineTarget = baselineTarget.parentNode || baselineTarget ;
+  }
+
+  if (baselineTarget === document.body) {
+    if (shiftFromTarget > 0) shiftFromTarget--;
+
+    return;
+  }
+
+  showBaselineFor(baselineTarget);
 };
 
 const enable = () => {
@@ -96,6 +134,7 @@ const enable = () => {
   }
 
   document.addEventListener("mouseover", handleElementEvent);
+  document.addEventListener("wheel", handleWheel, { passive: false });
 };
 
 const disable = () => {
@@ -104,6 +143,7 @@ const disable = () => {
   }
 
   document.removeEventListener("mouseover", handleElementEvent);
+  document.removeEventListener("wheel", handleWheel);
 };
 
 chrome.runtime.onMessage.addListener(({ message }) => {
