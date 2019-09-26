@@ -2,32 +2,53 @@ const baselinka = document.createElement("div");
 
 const getRelativeBaselinePosition = el => {
   const clone = el.cloneNode(true);
+  const client = el.getBoundingClientRect();
   const computedStyle = getComputedStyle(el);
-  clone.style.cssText = computedStyle.cssText;
-  clone.style.height = `${el.offsetHeight}px`;
-  clone.style.width = `${el.offsetWidth}px`;
-  clone.style.boxSizing = "border-box";
+  const parentComputedStyle = getComputedStyle(el.parentNode);
+  const hasFlexParent = parentComputedStyle.display.includes("flex");
+  const isInlineElement = computedStyle.display.includes("inline");
+
+  clone.style.cssText = `
+    ${computedStyle.cssText}
+    height: ${client.height}px;
+    width: ${client.width}px;
+    box-sizing: border-box;
+    top: unset;
+    left: unset;
+    bottom: unset;
+    right: unset;
+  `;
 
   const container = document.createElement("div");
   const marker = document.createElement("div");
 
-  if ("inline" === computedStyle.display) {
-    marker.style.cssText = `
-            display: inline-block;
-            vertical-align: baseline;
-        `;
-  } else {
+  if (hasFlexParent) {
     container.style.cssText = `
-            display: flex;
-            align-items: baseline;
-        `;
+        display: flex;
+        align-items: baseline;
+    `;
     marker.style.cssText = `
-            display: inline-flex;
-        `;
+        display: inline-flex;
+    `;
+  } else {
+    marker.style.cssText = `
+        display: inline-block;
+        vertical-align: baseline;
+    `;
   }
 
   container.appendChild(marker);
-  container.appendChild(clone);
+
+  if (!hasFlexParent && !isInlineElement) {
+    const inlineContainer = document.createElement("div");
+    inlineContainer.style.cssText = `
+      display: inline-block;
+    `;
+    inlineContainer.appendChild(clone);
+    container.appendChild(inlineContainer);
+  } else {
+    container.appendChild(clone);
+  }
 
   document.body.appendChild(container);
 
@@ -39,7 +60,7 @@ const getRelativeBaselinePosition = el => {
 };
 
 const handleElementEvent = ({ target }) => {
-  if (target === baselinka) {
+  if ([baselinka, document.body, document.documentElement].includes(target)) {
     return;
   }
 
