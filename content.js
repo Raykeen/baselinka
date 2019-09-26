@@ -70,13 +70,20 @@ const handleElementEvent = ({ target }) => {
   baselinka.style.cssText = `
         position: absolute;
         transition: all 0.3s cubic-bezier(0,1,.5,1);
-        background: red;
+        border-top: 1px solid red;
+        color: red;
+        white-space: nowrap;
         height: 1px;
         top: 0px;
+        z-index: 999999999;
         transform: translateY(${top + bl + window.pageYOffset}px);
         left: ${left}px;
         width: ${width}px;
     `;
+  baselinka.innerHTML =
+    target.tagName +
+    target.id.split(" ").filter(Boolean).map(id => "#" + id) +
+    target.className.split(" ").filter(Boolean).map(className => "." + className);
 };
 
 const enable = () => {
