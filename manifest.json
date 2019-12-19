@@ -5,7 +5,12 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": [
+        "content/dom.js",
+        "content/baseline_position.js",
+        "content/baseline_marker.js",
+        "content/controls.js"
+      ]
     }
   ],
   "background": {
