@@ -1,6 +1,50 @@
-const div = () => document.createElement("div");
+const setStyles = (element, styles) => Object.assign(element.style, styles);
 
-const baselinka = div();
+const div = (styles = {}) => {
+  const element = document.createElement("div");
+
+  setStyles(element, styles);
+
+  return element;
+};
+
+const baselinka = div({
+  position: "absolute",
+  transition: "all 0.3s cubic-bezier(0,1,.5,1)",
+  borderTop: "1px solid red",
+  color: "red",
+  whiteSpace: "nowrap",
+  height: "1px",
+  top: "0px",
+  zIndex: "999999999"
+});
+
+const createContainerForFlex = () =>
+  div({
+    display: "flex",
+    alignItems: "baseline"
+  });
+
+const createDummyForFlex = () =>
+  div({
+    display: "inline-flex"
+  });
+
+const createContainerForInline = () =>
+  div({
+    whiteSpace: "nowrap"
+  });
+
+const createDummyForInline = () =>
+  div({
+    display: "inline-block",
+    verticalAlign: "baseline"
+  });
+
+const createInlineWrapper = () =>
+  div({
+    display: "inline-block"
+  });
 
 const getRelativeBaselinePosition = el => {
   const clone = el.cloneNode(true);
@@ -12,45 +56,26 @@ const getRelativeBaselinePosition = el => {
   const hasFlexParent = parentComputedStyle.display.includes("flex");
   const isInlineElement = computedStyle.display.includes("inline");
 
-  clone.style.cssText = `
-    ${computedStyle.cssText}
-    height: ${clientRect.height}px;
-    width: ${clientRect.width}px;
-    box-sizing: border-box;
-    top: unset;
-    left: unset;
-    bottom: unset;
-    right: unset;
-  `;
+  setStyles(clone, {
+    height: `${clientRect.height}px`,
+    width: `${clientRect.width}px`,
+    boxSizing: "border-box",
+    top: "unset",
+    left: "unset",
+    bottom: "unset",
+    right: "unset"
+  });
 
-  const container = div();
-  const marker = div();
-
-  if (hasFlexParent) {
-    container.style.cssText = `
-        display: flex;
-        align-items: baseline;
-    `;
-    marker.style.cssText = `
-        display: inline-flex;
-    `;
-  } else {
-    container.style.cssText = `
-        white-space: nowrap;
-    `;
-    marker.style.cssText = `
-        display: inline-block;
-        vertical-align: baseline;
-    `;
-  }
+  const container = hasFlexParent
+    ? createContainerForFlex()
+    : createContainerForInline();
+  const marker = hasFlexParent ? createDummyForFlex() : createDummyForInline();
 
   container.appendChild(marker);
 
   if (!hasFlexParent && !isInlineElement) {
-    const inlineContainer = div();
-    inlineContainer.style.cssText = `
-      display: inline-block;
-    `;
+    const inlineContainer = createInlineWrapper();
+
     inlineContainer.appendChild(clone);
     container.appendChild(inlineContainer);
   } else {
@@ -73,19 +98,12 @@ const showBaselineFor = target => {
   const { top, left, width } = target.getBoundingClientRect();
   const bl = getRelativeBaselinePosition(target);
 
-  baselinka.style.cssText = `
-        position: absolute;
-        transition: all 0.3s cubic-bezier(0,1,.5,1);
-        border-top: 1px solid red;
-        color: red;
-        white-space: nowrap;
-        height: 1px;
-        top: 0px;
-        z-index: 999999999;
-        transform: translateY(${top + bl + window.pageYOffset}px);
-        left: ${left}px;
-        width: ${width}px;
-    `;
+  setStyles(baselinka, {
+    transform: `translateY(${top + bl + window.pageYOffset}px)`,
+    left: `${left}px`,
+    width: `${width}px`
+  });
+
   baselinka.innerHTML =
     target.tagName +
     target.id
