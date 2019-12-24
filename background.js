@@ -18,8 +18,15 @@ const disable = tabId => {
   chrome.tabs.sendMessage(tabId, { message: "baselinka/disable" });
 
   chrome.browserAction.setTitle({ title: "Show baselines", tabId });
-  chrome.browserAction.setBadgeText({ text: "OFF", tabId });
-  chrome.browserAction.setBadgeBackgroundColor({ color: "#121212", tabId });
+  chrome.browserAction.setIcon({
+    path: {
+      "16": "icons/icon-disabled16.png",
+      "24": "icons/icon-disabled24.png",
+      "32": "icons/icon-disabled32.png",
+      "64": "icons/icon-disabled64.png",
+      "128": "icons/icon-disabled128.png"
+    }
+  });
 };
 
 const enable = tabId => {
@@ -27,8 +34,15 @@ const enable = tabId => {
 
   chrome.tabs.sendMessage(tabId, { message: "baselinka/enable" });
   chrome.browserAction.setTitle({ title: "Hide baselines", tabId });
-  chrome.browserAction.setBadgeText({ text: "ON", tabId });
-  chrome.browserAction.setBadgeBackgroundColor({ color: "#A6E22E", tabId });
+  chrome.browserAction.setIcon({
+    path: {
+      "16": "icons/icon16.png",
+      "24": "icons/icon24.png",
+      "32": "icons/icon32.png",
+      "64": "icons/icon64.png",
+      "128": "icons/icon128.png"
+    }
+  });
 };
 
 chrome.browserAction.onClicked.addListener(function(tab) {
@@ -43,6 +57,13 @@ chrome.tabs.onCreated.addListener(tab => {
 });
 
 chrome.tabs.onUpdated.addListener(tabId => {
+  isEnabledIn(tabId, isEnabled => {
+    if (isEnabled) enable(tabId);
+    else disable(tabId);
+  });
+});
+
+chrome.tabs.onActivated.addListener(({ tabId }) => {
   isEnabledIn(tabId, isEnabled => {
     if (isEnabled) enable(tabId);
     else disable(tabId);
