@@ -1,4 +1,5 @@
-# Baselinka
+<img src="icons/icon64.png" height="48" width="48" align="absmiddle"> Baselinka
+=======================
 
 Chrome extension that shows the baseline of DOM elements on hover.
 
