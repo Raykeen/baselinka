@@ -13,8 +13,5 @@ const getSimpleSelector = element =>
   element.id
     .split(" ")
     .filter(Boolean)
-    .map(id => "#" + id) +
-  element.className
-    .split(" ")
-    .filter(Boolean)
-    .map(className => "." + className);
+    .map(id => "#" + id).join("") +
+  Array.from(element.classList).map(className => "." + className).join("");
