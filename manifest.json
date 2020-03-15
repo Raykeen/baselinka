@@ -26,5 +26,5 @@
   "browser_action": {
     "default_title": "Show baselines"
   },
-  "permissions": ["storage"]
+  "permissions": ["activeTab", "storage"]
 }
