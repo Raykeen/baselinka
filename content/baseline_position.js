@@ -11,7 +11,7 @@ const createDummyForFlex = () =>
 
 const createContainerForInline = () =>
     div({
-        whiteSpace: "nowrap"
+        width: "fit-content"
     });
 
 const createDummyForInline = () =>
